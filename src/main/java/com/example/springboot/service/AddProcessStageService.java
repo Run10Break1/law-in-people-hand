@@ -39,7 +39,7 @@ public class AddProcessStageService {
 			
 			Pageable pageable = PageRequest.of(i, pageSize);
 			
-			Page<Bill> billPage = billRepository.findAllByStageNotNull(pageable);
+			Page<Bill> billPage = billRepository.findAllByStageNull(pageable);
 			if(!billPage.hasContent()) {
 				System.out.println(String.format("%d 페이지에서 더 이상 bill가 존재하지 않습니다.", i));
 				return;

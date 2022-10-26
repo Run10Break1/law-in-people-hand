@@ -8,5 +8,5 @@ import com.example.springboot.model.Bill;
 
 
 public interface BillRepository extends JpaRepository<Bill, String> {
-	Page<Bill> findAllByStageNotNull(Pageable pageable);
+	Page<Bill> findAllByStageNull(Pageable pageable);
 }
