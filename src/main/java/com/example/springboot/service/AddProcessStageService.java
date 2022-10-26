@@ -71,6 +71,11 @@ public class AddProcessStageService {
 		}
 		
 		String korName = onElem.text();
-		return ProcessStage.get(korName);
+		ProcessStage ps = ProcessStage.get(korName);
+		if(ps == null) {
+			System.out.println(String.format("%s를 url로 가지는 bill에 대해 stage를 결정할 수 없습니다.", url));
+		}
+		
+		return ps;
 	}
 }
