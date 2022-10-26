@@ -28,6 +28,42 @@ public class AddProcessStageService {
 	private final BillRepository billRepository;
 	
 	@Async
+	public void addRemainProcessStage(int startPage, Integer endPage) throws IOException {
+		
+		final int pageSize = 100;
+		
+		long before, after;
+		
+		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
+			before = System.currentTimeMillis();
+			
+			Pageable pageable = PageRequest.of(i, pageSize);
+			
+			Page<Bill> billPage = billRepository.findAllByStageNotNull(pageable);
+			if(!billPage.hasContent()) {
+				System.out.println(String.format("%d 페이지에서 더 이상 bill가 존재하지 않습니다.", i));
+				return;
+			}
+
+			List<Bill> billList = billPage.getContent();
+			
+			for(Bill bill : billList) {
+				if(bill.getStage() != null) continue;
+				
+				ProcessStage processStage = parseHTML(bill.getUrl());
+				bill.setStage(processStage);
+			}
+			
+			billRepository.saveAll(billList);
+			
+			after = System.currentTimeMillis();
+			long executeTime = (after - before) / 1000;
+			
+			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), executeTime));
+		}
+	}
+	
+	@Async
 	public void addProcessStage(int startPage, Integer endPage, int depth) throws IOException {
 		if(depth == 6) {
 			System.out.println(String.format("[#] 마지막까지 실패한 페이지 : %d", startPage));

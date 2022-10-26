@@ -48,6 +48,18 @@ public class BillController {
 		return ResponseEntity.ok("ok");
 	}
 	
+	@GetMapping("/add-remain-process-stage")
+	public ResponseEntity<String> addRemainProcessStage(@RequestParam("startPage") Integer startPage, @RequestParam(value = "endPage", required = false) Integer endPage) {
+		
+		try {
+			addProcessStageService.addRemainProcessStage(startPage, endPage);
+		} catch(Exception e) {
+			System.err.println(e);
+		}
+		
+		return ResponseEntity.ok("ok");
+	}
+	
 	@PostMapping("/add-process-stage")
 	public ResponseEntity<String> addRemainProcessStage(@RequestBody List<Integer> pageList) {
 		
