@@ -1,6 +1,7 @@
 package com.example.springboot.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -33,6 +34,8 @@ public class AddProcessStageService {
 		
 		long before, after;
 		
+		List<Integer> zeroExecuteTimePageList = new ArrayList<>();
+		
 		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
 			before = System.currentTimeMillis();
 			
@@ -56,10 +59,15 @@ public class AddProcessStageService {
 			billRepository.saveAll(billList);
 			
 			after = System.currentTimeMillis();
-			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), (after - before) / 1000));
+			long executeTime = (after - before) / 1000;
+			if(executeTime == 0) {
+				zeroExecuteTimePageList.add(i);
+			}
+			
+			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), executeTime));
 		}
 		
-		
+		System.out.println(String.format("걸린 시간이 0인 페이지들 : %s", zeroExecuteTimePageList.toString()));
 	}
 	
 	private ProcessStage parseHTML(String url) throws IOException {
