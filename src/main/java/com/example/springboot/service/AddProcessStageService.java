@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -26,17 +27,29 @@ public class AddProcessStageService {
 	private final BillRepository billRepository;
 	
 	@Async
-	public void addProcessStage(Pageable pageable) throws IOException {
+	public void addProcessStage(int startPage, Integer endPage) throws IOException {
+
+		final int pageSize = 100;
 		
-		Page<Bill> billPage = billRepository.findAll(pageable);
-		List<Bill> billList = billPage.getContent();
-		
-		for(Bill bill : billList) {
-			ProcessStage processStage = parseHTML(bill.getUrl());
-			bill.setStage(processStage);
+		for(int i = startPage; i <= endPage; i++) {
+			Pageable pageable = PageRequest.of(i, pageSize);
+			
+			Page<Bill> billPage = billRepository.findAll(pageable);
+			if(!billPage.hasContent()) return;
+
+			List<Bill> billList = billPage.getContent();
+			
+			for(Bill bill : billList) {
+				ProcessStage processStage = parseHTML(bill.getUrl());
+				bill.setStage(processStage);
+			}
+			
+			billRepository.saveAll(billList);
+			
+			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d", i, endPage, billPage.getSize()));
 		}
 		
-		billRepository.saveAll(billList);
+		
 	}
 	
 	private ProcessStage parseHTML(String url) throws IOException {

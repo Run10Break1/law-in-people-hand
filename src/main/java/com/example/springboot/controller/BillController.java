@@ -34,10 +34,10 @@ public class BillController {
 	}
 	
 	@GetMapping("/add-process-stage")
-	public ResponseEntity<String> addProcessStage(Pageable pageable) {
+	public ResponseEntity<String> addProcessStage(@RequestParam("startPage") Integer startPage, @RequestParam(value = "endPage", required = false) Integer endPage) {
 		
 		try {
-			addProcessStageService.addProcessStage(pageable);
+			addProcessStageService.addProcessStage(startPage, endPage);
 		} catch(Exception e) {
 			System.err.println(e);
 		}
