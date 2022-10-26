@@ -17,6 +17,7 @@ public enum ProcessStage {
 	NON_RECURRING_DISPOSAL("회기불계속폐기"),
 	DISPOSAL("폐기"),
 	WITHDRAW("철회"),
+	DENIAL("부결"),
 	PROMULGATION("공포");
 	
 	private ProcessStage(String korName) {

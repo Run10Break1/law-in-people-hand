@@ -43,6 +43,8 @@ public class AddProcessStageService {
 			List<Bill> billList = billPage.getContent();
 			
 			for(Bill bill : billList) {
+				if(bill.getStage() != null) continue;
+				
 				ProcessStage processStage = parseHTML(bill.getUrl());
 				bill.setStage(processStage);
 			}
