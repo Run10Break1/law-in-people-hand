@@ -31,11 +31,14 @@ public class AddProcessStageService {
 
 		final int pageSize = 100;
 		
-		for(int i = startPage; i <= endPage; i++) {
+		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
 			Pageable pageable = PageRequest.of(i, pageSize);
 			
 			Page<Bill> billPage = billRepository.findAll(pageable);
-			if(!billPage.hasContent()) return;
+			if(!billPage.hasContent()) {
+				System.out.println(String.format("%d 페이지에서 더 이상 bill가 존재하지 않습니다.", i));
+				return;
+			}
 
 			List<Bill> billList = billPage.getContent();
 			
