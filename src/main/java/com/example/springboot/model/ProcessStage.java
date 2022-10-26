@@ -15,6 +15,7 @@ public enum ProcessStage {
 	SUBSTITUTED_DISPOSAL("대안반영폐기"),
 	AGE_EXPIRE_DISPOSAL("임기만료폐기"),
 	NON_RECURRING_DISPOSAL("회기불계속폐기"),
+	DISPOSAL("폐기"),
 	WITHDRAW("철회"),
 	PROMULGATION("공포");
 	
