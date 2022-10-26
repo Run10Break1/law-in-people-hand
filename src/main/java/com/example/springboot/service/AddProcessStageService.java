@@ -31,7 +31,11 @@ public class AddProcessStageService {
 
 		final int pageSize = 100;
 		
+		long before, after;
+		
 		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
+			before = System.currentTimeMillis();
+			
 			Pageable pageable = PageRequest.of(i, pageSize);
 			
 			Page<Bill> billPage = billRepository.findAll(pageable);
@@ -51,7 +55,8 @@ public class AddProcessStageService {
 			
 			billRepository.saveAll(billList);
 			
-			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d", i, endPage, billPage.getSize()));
+			after = System.currentTimeMillis();
+			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), (after - before) / 1000));
 		}
 		
 		
