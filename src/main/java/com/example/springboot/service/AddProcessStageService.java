@@ -30,6 +30,7 @@ public class AddProcessStageService {
 	@Async
 	public void addProcessStage(int startPage, Integer endPage, int depth) throws IOException {
 		if(depth == 4) {
+			System.out.println(String.format("[#] 마지막까지 실패한 페이지 : %d", startPage));
 			return;
 		}
 		
