@@ -14,6 +14,8 @@ public enum ProcessStage {
 	TRANSMISSION_TO_THE_GOVERNMENT("정부 이송"),
 	SUBSTITUTED_DISPOSAL("대안반영폐기"),
 	AGE_EXPIRE_DISPOSAL("임기만료폐기"),
+	NON_RECURRING_DISPOSAL("회기불계속"),
+	WITHDRAW("철회"),
 	PROMULGATION("공포");
 	
 	private ProcessStage(String korName) {
