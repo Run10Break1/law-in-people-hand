@@ -53,8 +53,12 @@ public class AddProcessStageService {
 
 			List<Bill> billList = billPage.getContent();
 			
+			int continueCount = 0;
 			for(Bill bill : billList) {
-				if(bill.getStage() != null) continue;
+				if(bill.getStage() != null) {
+					continueCount++;
+					continue;
+				}
 				
 				ProcessStage processStage = parseHTML(bill.getUrl());
 				bill.setStage(processStage);
@@ -64,7 +68,7 @@ public class AddProcessStageService {
 			
 			after = System.currentTimeMillis();
 			long executeTime = (after - before) / 1000;
-			if(executeTime < 10) {
+			if(executeTime < (10 - continueCount * 0.07)) {
 				lessExecuteTimePageList.add(i);
 			}
 			
