@@ -95,7 +95,7 @@ public class DatabaseMigrationService {
 		
 		if(root.has("RESULT")) {
 			// 해당하는 데이터가 없는 경우
-			return new Response(0, null);
+			return new Response(0, List.of());
 		} else {
 			 JsonNode arr = root.get("TVBPMBILL11");
 			 
