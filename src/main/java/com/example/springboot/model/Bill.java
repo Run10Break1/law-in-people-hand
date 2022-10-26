@@ -37,7 +37,7 @@ public class Bill {
 	private LocalDate proposeDate;
 	
 	@JsonProperty("CURR_COMMITTEE_ID")
-	private Integer currCommitteeId;
+	private String currCommitteeId;
 	
 	@JsonProperty("CURR_COMMITTEE")
 	private String currCommittee;
