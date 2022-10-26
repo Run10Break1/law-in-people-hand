@@ -43,7 +43,7 @@ public class DatabaseMigrationService {
 	public void migrate(int startPage, Integer endPage) throws Exception {
 		
 		Request.RequestBuilder requestBuilder = new Request.RequestBuilder();
-		
+
 		Response response;
 		do {
 			Request request = requestBuilder.pageIndex(startPage).build();
@@ -65,6 +65,8 @@ public class DatabaseMigrationService {
 		
 		HttpRequest httpRequest = HttpRequest.newBuilder(request.toURI()).GET().build();
 		HttpClient client = HttpClient.newBuilder().build();
+		
+		System.out.println(httpRequest.uri());
 		
 		HttpResponse<String> response = client.send(httpRequest, BodyHandlers.ofString());
 		
@@ -142,7 +144,7 @@ class Request {
 			String proposerKind, String currCommitteeId, String currCommittee, String procResultCode,
 			LocalDate procDate) {
 		this.type = type != null ? type : "json";
-		this.pageIndex = pageIndex != null ? pageIndex : 0;
+		this.pageIndex = pageIndex != null ? pageIndex : 1;
 		this.pageSize = pageSize != null ? pageSize : 100;
 		this.billId = billId;
 		this.billNo = billNo;
