@@ -6,7 +6,9 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,8 @@ public class AddProcessStageService {
 	@Async
 	public void addProcessStage(Pageable pageable) throws IOException {
 		
-		List<Bill> billList = billRepository.findAll(pageable);
+		Page<Bill> billPage = billRepository.findAll(pageable);
+		List<Bill> billList = billPage.getContent();
 		
 		for(Bill bill : billList) {
 			ProcessStage processStage = parseHTML(bill.getUrl());
@@ -36,7 +39,7 @@ public class AddProcessStageService {
 		billRepository.saveAll(billList);
 	}
 	
-	ProcessStage parseHTML(String url) throws IOException {
+	private ProcessStage parseHTML(String url) throws IOException {
 		Document doc = Jsoup.connect(url).get();
 		
 		Element wrapElem = doc.selectFirst("body > div > div.contentWrap > div.subContents > div > div.boxType01 > div");
