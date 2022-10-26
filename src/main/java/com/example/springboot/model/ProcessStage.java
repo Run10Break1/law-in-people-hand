@@ -12,6 +12,7 @@ public enum ProcessStage {
 	EXAMINATION_OF_LEGALITY_AND_WORDING("체계자구 심사"),
 	PLENARY_SITTING("본회의 심의"),
 	TRANSMISSION_TO_THE_GOVERNMENT("정부 이송"),
+	SUBSTITUTED("대안반영폐기"),
 	PROMULGATION("공포");
 	
 	private ProcessStage(String korName) {
