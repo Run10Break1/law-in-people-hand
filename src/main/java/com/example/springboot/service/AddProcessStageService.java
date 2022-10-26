@@ -55,10 +55,10 @@ public class AddProcessStageService {
 			
 			int continueCount = 0;
 			for(Bill bill : billList) {
-				if(bill.getStage() != null) {
-					continueCount++;
-					continue;
-				}
+//				if(bill.getStage() != null) {
+//					continueCount++;
+//					continue;
+//				}
 				
 				ProcessStage processStage = parseHTML(bill.getUrl());
 				bill.setStage(processStage);
@@ -79,7 +79,7 @@ public class AddProcessStageService {
 			return;
 		}
 		
-		System.out.println(String.format("[depth-%d] 걸린 시간이 기대보다 작은(10초) 페이지들 : %s", depth, lessExecuteTimePageList.toString()));
+		System.out.println(String.format("[depth-%d] 걸린 시간이 기대보다 작은 페이지들 : %s", depth, lessExecuteTimePageList.toString()));
 		
 		try {
 			Thread.sleep(1020 * depth);
