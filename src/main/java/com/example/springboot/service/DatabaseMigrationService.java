@@ -65,7 +65,7 @@ public class DatabaseMigrationService {
 			response = getFromSource(request);
 			sendToTarget(response.billList);
 			
-			System.out.println(String.format("완료된 페이지 : %d, bill 개수 : %d", startPage, response.count));
+			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d", startPage, endPage, response.count));
 			
 			startPage++;
 		} while(response.count != 0 && (endPage != null ? (startPage <= endPage) : true));
