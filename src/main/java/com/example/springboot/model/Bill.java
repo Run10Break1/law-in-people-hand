@@ -3,11 +3,14 @@ package com.example.springboot.model;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+import lombok.Getter;
 
 
 @Entity
@@ -56,4 +59,7 @@ public class Bill {
 	
 	@JsonProperty("PROC_DT")
 	private LocalDate procDate;
+	
+	@Enumerated(EnumType.STRING) // enum을 데이터베이스에 string으로 저장하기
+	private ProcessStage stage;
 }
