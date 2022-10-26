@@ -29,7 +29,7 @@ public class AddProcessStageService {
 	
 	@Async
 	public void addProcessStage(int startPage, Integer endPage, int depth) throws IOException {
-		if(depth == 4) {
+		if(depth == 6) {
 			System.out.println(String.format("[#] 마지막까지 실패한 페이지 : %d", startPage));
 			return;
 		}
@@ -38,7 +38,7 @@ public class AddProcessStageService {
 		
 		long before, after;
 		
-		List<Integer> zeroExecuteTimePageList = new ArrayList<>();
+		List<Integer> lessExecuteTimePageList = new ArrayList<>();
 		
 		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
 			before = System.currentTimeMillis();
@@ -64,26 +64,26 @@ public class AddProcessStageService {
 			
 			after = System.currentTimeMillis();
 			long executeTime = (after - before) / 1000;
-			if(executeTime == 0) {
-				zeroExecuteTimePageList.add(i);
+			if(executeTime < 10) {
+				lessExecuteTimePageList.add(i);
 			}
 			
 			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), executeTime));
 		}
 		
-		if(zeroExecuteTimePageList.isEmpty()) {
+		if(lessExecuteTimePageList.isEmpty()) {
 			return;
 		}
 		
-		System.out.println(String.format("[depth-%d] 걸린 시간이 0인 페이지들 : %s", depth, zeroExecuteTimePageList.toString()));
+		System.out.println(String.format("[depth-%d] 걸린 시간이 기대보다 작은(10초) 페이지들 : %s", depth, lessExecuteTimePageList.toString()));
 		
 		try {
-			Thread.sleep(1000 * depth);
+			Thread.sleep(1020 * depth);
 		} catch (InterruptedException e) {
 			System.out.println(e);
 		}
-		for(int zeroExecuteTimePage : zeroExecuteTimePageList) {
-			addProcessStage(zeroExecuteTimePage, zeroExecuteTimePage, depth + 1);
+		for(int lessExecuteTimePage : lessExecuteTimePageList) {
+			addProcessStage(lessExecuteTimePage, lessExecuteTimePage, depth + 1);
 		}
 	}
 	
