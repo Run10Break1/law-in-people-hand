@@ -28,8 +28,11 @@ public class AddProcessStageService {
 	private final BillRepository billRepository;
 	
 	@Async
-	public void addProcessStage(int startPage, Integer endPage) throws IOException {
-
+	public void addProcessStage(int startPage, Integer endPage, int depth) throws IOException {
+		if(depth == 4) {
+			return;
+		}
+		
 		final int pageSize = 100;
 		
 		long before, after;
@@ -67,7 +70,16 @@ public class AddProcessStageService {
 			System.out.println(String.format("완료된 페이지 : %d/%d, bill 개수 : %d, 걸린 시간 : %ds", i, endPage, billPage.getSize(), executeTime));
 		}
 		
-		System.out.println(String.format("걸린 시간이 0인 페이지들 : %s", zeroExecuteTimePageList.toString()));
+		System.out.println(String.format("[depth-%d] 걸린 시간이 0인 페이지들 : %s", depth, zeroExecuteTimePageList.toString()));
+		
+		try {
+			Thread.sleep(1000 * depth);
+		} catch (InterruptedException e) {
+			System.out.println(e);
+		}
+		for(int zeroExecuteTimePage : zeroExecuteTimePageList) {
+			addProcessStage(zeroExecuteTimePage, zeroExecuteTimePage, depth + 1);
+		}
 	}
 	
 	private ProcessStage parseHTML(String url) throws IOException {

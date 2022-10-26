@@ -1,6 +1,5 @@
 package com.example.springboot.controller;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +36,7 @@ public class BillController {
 	public ResponseEntity<String> addProcessStage(@RequestParam("startPage") Integer startPage, @RequestParam(value = "endPage", required = false) Integer endPage) {
 		
 		try {
-			addProcessStageService.addProcessStage(startPage, endPage);
+			addProcessStageService.addProcessStage(startPage, endPage, 1);
 		} catch(Exception e) {
 			System.err.println(e);
 		}
