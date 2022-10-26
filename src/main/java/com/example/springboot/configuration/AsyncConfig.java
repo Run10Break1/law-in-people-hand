@@ -15,9 +15,9 @@ public class AsyncConfig {
 	@Bean
 	public Executor getAsyncExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(15);
-		executor.setMaxPoolSize(15);
-		executor.setQueueCapacity(400);
+		executor.setCorePoolSize(20);
+		executor.setMaxPoolSize(20);
+		executor.setQueueCapacity(600);
 		executor.setThreadNamePrefix("migration-");
 		executor.initialize();
 		return executor;
