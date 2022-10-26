@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.springboot.model.Bill;
 import com.example.springboot.repository.BillRepository;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +38,19 @@ import java.net.http.HttpResponse.BodyHandlers;
 @Service
 @AllArgsConstructor
 public class DatabaseMigrationService {
+	
+//	public static void main(String ...args) {
+//		Request.RequestBuilder builder = new Request.RequestBuilder();
+//		
+//		builder.billId("123").billName("asdf").billNo("000").currCommittee("cdcdc");
+//		
+//		Request request = builder.build();
+//		try {
+//			System.out.println(request.toURI());
+//		} catch (URISyntaxException e) {
+//			System.out.println(e);
+//		}
+//	}
 
 	private final BillRepository billRepository;
 	
@@ -124,25 +139,41 @@ class Response {
 
 @Data
 class Request {
-	private final String KEY = "d83074a6969742279ca72e2e36fb56d2";
+	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static String KEY = "d83074a6969742279ca72e2e36fb56d2";
+	@JsonProperty("Key")
+	private final String key;
 	
+	// 필수
+	@JsonProperty("Type")
 	private final String type;
+	@JsonProperty("pIndex")
 	private final int pageIndex;
+	@JsonProperty("pSize")
 	private final int pageSize;
-	
+	// 선택
+	@JsonProperty("BILL_ID")
 	private final String billId;
+	@JsonProperty("BILL_NO")
 	private final String billNo;
+	@JsonProperty("BILL_NAME")
 	private final String billName;
+	@JsonProperty("PROPOSER_KIND")
 	private final String proposerKind;
+	@JsonProperty("CURR_COMMITTEE_ID")
 	private final String currCommitteeId;
+	@JsonProperty("CURR_COMMITTEE")
 	private final String currCommittee;
+	@JsonProperty("PROC_RESULT_CD")
 	private final String procResultCode;
+	@JsonProperty("PROC_DT")
 	private final LocalDate procDate;
 	
 	@Builder
 	public Request(String type, Integer pageIndex, Integer pageSize, String billId, String billNo, String billName,
 			String proposerKind, String currCommitteeId, String currCommittee, String procResultCode,
 			LocalDate procDate) {
+		this.key = KEY;
 		this.type = type != null ? type : "json";
 		this.pageIndex = pageIndex != null ? pageIndex : 1;
 		this.pageSize = pageSize != null ? pageSize : 100;
@@ -157,7 +188,6 @@ class Request {
 	}
 	
 	private String query() {
-		ObjectMapper mapper = new ObjectMapper();
 		
 		Map<String, Object> map = mapper.convertValue(this, Map.class);
 		
