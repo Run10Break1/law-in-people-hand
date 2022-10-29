@@ -1,11 +1,17 @@
-package com.example.springboot.model;
+package com.project.lawinpeoplehand.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -62,4 +68,12 @@ public class Bill {
 	
 	@Enumerated(EnumType.STRING) // enum을 데이터베이스에 string으로 저장하기
 	private ProcessStage stage;
+	
+	private LocalDate stageUpdateAt;
+	
+	@Column(columnDefinition = "TEXT")
+	private String overview;
+	
+	@OneToMany(mappedBy = "bill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Vote> votedList = new ArrayList<>();
 }

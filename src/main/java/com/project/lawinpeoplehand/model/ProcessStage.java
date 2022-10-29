@@ -1,4 +1,4 @@
-package com.example.springboot.model;
+package com.project.lawinpeoplehand.model;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

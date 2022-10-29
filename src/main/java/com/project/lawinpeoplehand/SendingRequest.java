@@ -1,4 +1,4 @@
-package com.example.springboot;
+package com.project.lawinpeoplehand;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,8 +12,8 @@ public class SendingRequest {
 		
 		HttpClient client = HttpClient.newBuilder().build();
 		
-		for(int startPage = 0; startPage <= 920; startPage += 30) {
-			URI uri = new URI("http", "49.50.162.163:8081", "/bill/add-remain-process-stage", String.format("startPage=%d&endPage=%d", startPage, startPage + 29), null);
+		for(int startPage = 0; startPage <= 920; startPage += 50) {
+			URI uri = new URI("http", "49.50.162.163:8081", "/bill/add-remain-process-stage", String.format("startPage=%d&endPage=%d", startPage, startPage + 49), null);
 			
 			HttpRequest httpRequest = HttpRequest.newBuilder(uri).GET().build();
 			

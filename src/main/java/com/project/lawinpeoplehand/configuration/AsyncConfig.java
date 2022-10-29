@@ -1,4 +1,4 @@
-package com.example.springboot.configuration;
+package com.project.lawinpeoplehand.configuration;
 
 import java.util.concurrent.Executor;
 
