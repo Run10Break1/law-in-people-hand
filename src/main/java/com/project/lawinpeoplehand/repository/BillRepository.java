@@ -13,5 +13,5 @@ public interface BillRepository extends JpaRepository<Bill, String> {
 	Page<Bill> findAllByStage(ProcessStage stage, Pageable pageable);
 	
 	// addDataFromUrlService를 위한 쿼리 메소드
-	Page<Bill> findAllByOverviewNotNull(Pageable pageable);
+	Page<Bill> findAllByOverviewNull(Pageable pageable);
 }
