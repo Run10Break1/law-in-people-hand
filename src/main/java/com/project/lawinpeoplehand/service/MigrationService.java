@@ -230,7 +230,7 @@ public class MigrationService {
 		Element elem = doc.selectFirst("#summaryContentDiv");
 		
 		if(elem == null) {
-			System.out.println("제안이유 및 주요내용 요소를 찾을 수 없습니다.");
+			System.out.println(String.format("제안이유 및 주요내용 요소를 찾을 수 없습니다. url : %s", url));
 			return null;
 		}
 		
