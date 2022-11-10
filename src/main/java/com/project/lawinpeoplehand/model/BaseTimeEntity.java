@@ -1,6 +1,7 @@
 package com.project.lawinpeoplehand.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
@@ -18,8 +19,8 @@ import lombok.Getter;
 public class BaseTimeEntity {
 	
 	@CreatedDate
-	private LocalDate createdAt;
+	private LocalDateTime createdAt;
 	
 	@LastModifiedDate
-	private LocalDate updatedAt;
+	private LocalDateTime updatedAt;
 }

@@ -8,10 +8,14 @@ import com.project.lawinpeoplehand.model.Bill;
 import com.project.lawinpeoplehand.model.ProcessStage;
 
 
-public interface BillRepository extends JpaRepository<Bill, String> {
+public interface BillRepository extends JpaRepository<Bill, String>, BillRepositoryExtension {
+	
+	Page<Bill> findAll(Pageable pageable);
+	
+	// 이 줄 아래부터 MigrationService를 위한 쿼리 메소드
 	Page<Bill> findAllByStageNull(Pageable pageable);
 	Page<Bill> findAllByStage(ProcessStage stage, Pageable pageable);
 	
-	// addDataFromUrlService를 위한 쿼리 메소드
 	Page<Bill> findAllByOverviewNull(Pageable pageable);
+	Page<Bill> findAllByOverviewNotNull(Pageable pageable);
 }

@@ -1,8 +1,6 @@
 package com.project.lawinpeoplehand.model;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,13 +8,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Data
-@EqualsAndHashCode(of = "id", callSuper = false)
-public class Vote extends BaseTimeEntity {
+@NoArgsConstructor
+public class BillKeyword {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +22,16 @@ public class Vote extends BaseTimeEntity {
 	
 	@ManyToOne
 	@JoinColumn
-	private User user;
+	private Bill bill;
 	
 	@ManyToOne
 	@JoinColumn
-	private Bill bill;
+	private Keyword keyword;
+
 	
-	@Enumerated(EnumType.STRING)
-	private VoteType voteType;
+	
+	public BillKeyword(Bill bill, Keyword keyword) {
+		this.bill = bill;
+		this.keyword = keyword;
+	}
 }

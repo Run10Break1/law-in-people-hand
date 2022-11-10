@@ -70,4 +70,16 @@ public class MigrationController {
 		return ResponseEntity.ok("ok");
 	
 	}
+	
+	@GetMapping("/add-keyword")
+	public ResponseEntity<String> addKeyword(@RequestParam("startPage") Integer startPage, @RequestParam(value = "endPage", required = false) Integer endPage) {
+		
+		try {
+			migrationService.addKeyword(startPage, endPage);
+		} catch(Exception e) {
+			System.err.println(e);
+		}
+		
+		return ResponseEntity.ok(String.format("startPage:endPage=%d:%d", startPage, endPage));
+	}
 }

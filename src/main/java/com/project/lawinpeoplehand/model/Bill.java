@@ -28,18 +28,22 @@ public class Bill {
 	private String billID;
 	
 	@JsonProperty("BILL_NO")
+	@Column(nullable = false)
 	private Integer billNo;
 	
 	@JsonProperty("AGE")
+	@Column(nullable = false)
 	private Integer age;
 	
 	@JsonProperty("BILL_NAME")
+	@Column(nullable = false)
 	private String billName;
 	
 	@JsonProperty("PROPOSER")
 	private String proposer;
 	
 	@JsonProperty("PROPOSER_KIND")
+	@Column(nullable = false)
 	private String proposerKind;
 	
 	@JsonProperty("PROPOSE_DT")
@@ -58,6 +62,7 @@ public class Bill {
 	private LocalDate committeeProcDate;
 	
 	@JsonProperty("LINK_URL")
+	@Column(nullable = false)
 	private String url;
 	
 	@JsonProperty("PROC_RESULT_CD")
@@ -67,7 +72,11 @@ public class Bill {
 	private LocalDate procDate;
 	
 	@Enumerated(EnumType.STRING) // enum을 데이터베이스에 string으로 저장하기
+	@Column(nullable = false)
 	private ProcessStage stage;
+	
+	//@Column(nullable = false)
+	private Integer stageOrder;
 	
 	private LocalDate stageUpdateAt;
 	
@@ -76,4 +85,7 @@ public class Bill {
 	
 	@OneToMany(mappedBy = "bill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Vote> votedList = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "bill", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BillKeyword> billKeywordList = new ArrayList<>();
 }

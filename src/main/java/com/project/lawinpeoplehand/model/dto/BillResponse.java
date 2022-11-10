@@ -2,6 +2,10 @@ package com.project.lawinpeoplehand.model.dto;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.lawinpeoplehand.model.Bill;
 import com.project.lawinpeoplehand.model.ProcessStage;
 
@@ -10,6 +14,8 @@ import lombok.Data;
 
 @Data
 public class BillResponse {
+	
+	private long jsonUID = 11111111L;
 	
 	private String billId;
 	
@@ -23,21 +29,30 @@ public class BillResponse {
 	
 	private String proposerKind;
 	
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	@DateTimeFormat(iso = ISO.DATE)
 	private LocalDate proposeDate;
 	
 	private String currCommitteeId;
 	
 	private String currCommittee;
 	
+	@DateTimeFormat(iso = ISO.DATE)
+	private LocalDate committeeDate;
+	
+	@DateTimeFormat(iso = ISO.DATE)
 	private LocalDate committeeProcDate;
 	
 	private String url;
 	
-	private String procResultCodee;
+	private String procResultCode;
 	
+	@DateTimeFormat(iso = ISO.DATE)
 	private LocalDate procDate;
 	
 	private ProcessStage stage;
+	
+	private String overview;
 	
 	public BillResponse(Bill bill) {
 		billId = bill.getBillID();
@@ -49,10 +64,12 @@ public class BillResponse {
 		proposeDate = bill.getProposeDate();
 		currCommitteeId = bill.getCurrCommitteeId();
 		currCommittee = bill.getCurrCommittee();
+		committeeDate = bill.getCommitteeDate();
 		committeeProcDate = bill.getCommitteeProcDate();
 		url = bill.getUrl();
-		procResultCodee = bill.getProcResultCode();
+		procResultCode = bill.getProcResultCode();
 		procDate = bill.getProcDate();
 		stage = bill.getStage();
+		overview = bill.getOverview();
 	}
 }

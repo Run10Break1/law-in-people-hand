@@ -12,4 +12,9 @@ public class TimeUtil {
 	public static LocalDateTime asEndOfDay(LocalDate d) {
 		return d.atTime(23, 59, 59);
 	}
+	
+	public static String toString(LocalDateTime dt) {
+		String [] s = dt.toString().split("T");
+		return s[0] + " " + s[1];
+	}
 }

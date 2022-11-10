@@ -15,13 +15,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 
 @Entity(name = "USERS")
 @Data
+@Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor // builder를 위해서 필요합니다.
 public class User extends BaseTimeEntity {
 	
 	@Id

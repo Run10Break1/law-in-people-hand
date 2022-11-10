@@ -1,6 +1,7 @@
 package com.project.lawinpeoplehand.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -9,16 +10,23 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +36,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.lawinpeoplehand.model.Bill;
+import com.project.lawinpeoplehand.model.BillKeyword;
+import com.project.lawinpeoplehand.model.Keyword;
 import com.project.lawinpeoplehand.model.ProcessStage;
+import com.project.lawinpeoplehand.repository.BillKeywordRepository;
 import com.project.lawinpeoplehand.repository.BillRepository;
+import com.project.lawinpeoplehand.repository.KeywordRepository;
 
+import kr.co.shineware.nlp.komoran.core.Komoran;
+import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +55,13 @@ import lombok.RequiredArgsConstructor;
 public class MigrationService {
 	
 	private final BillRepository billRepository;
+	private final BillKeywordRepository billKeywordRepository;
+	private final KeywordRepository keywordRepository;
+	private final Komoran komoran;
+	private final HanjaToHangleService hanjaToHangleService;
 	
+	
+	// ProcessStage 저장하기
 	@Async
 	public void addRemainProcessStage(int startPage, Integer endPage) throws IOException {
 		
@@ -165,7 +185,9 @@ public class MigrationService {
 		
 		return ps;
 	}
+
 	
+	// Overview 저장하기
 	@Async
 	public void addOverview(int startPage, Integer endPage, int depth) throws IOException {
 		if(depth == 6) {
@@ -194,6 +216,8 @@ public class MigrationService {
 			
 			for(Bill bill : billList) {
 				String overview = parseHTMLForOverview(bill.getUrl());
+				if(overview == null) continue;
+				
 				bill.setOverview(overview);
 			}
 			
@@ -237,6 +261,114 @@ public class MigrationService {
 		String overview = elem.text();
 		return overview;
 	}
+
+	// Keyword 저장하기
+	//@Async
+	public void addKeyword(int startPage, Integer endPage) {
+		
+		final int pageSize = 100;
+		
+		for(int i = startPage; endPage == null ? true : i <= endPage; i++) {
+			
+			Pageable pageable = PageRequest.of(i, pageSize, Sort.by("billID"));
+			
+			Page<Bill> billPage = billRepository.findAllByOverviewNotNull(pageable);
+			if(!billPage.hasContent()) {
+				System.out.println(String.format("%d 페이지에서 더 이상 bill가 존재하지 않습니다.", i));
+				return;
+			}
+
+			List<Bill> billList = billPage.getContent();
+			
+			for(Bill bill : billList) {
+				
+				String overview = bill.getOverview();
+				if(hanjaToHangleService.containHanja(overview)) {
+					List<HanjaOrHangle> words = hanjaToHangleService.split(overview);
+					
+					StringBuilder stringBuilder = new StringBuilder();
+					for(HanjaOrHangle word : words) {
+						try {
+							stringBuilder.append(word.isHanja ? hanjaToHangleService.toHangle(word.string) : word.string);
+						} catch (UnsupportedEncodingException e) {
+							System.out.println(String.format("한자를 파싱하는데 오류 발생 url : %s", bill.getUrl()));
+							return;
+						}
+					}
+					
+					overview = stringBuilder.toString();
+				}
+				
+				KomoranResult analyzeResultList = komoran.analyze(overview);
+				
+				List<String> words = getWords(analyzeResultList);
+				
+				//System.out.println(String.format("%s, url : %s", words.toString(), bill.getUrl()));
+
+				for(String word : words) {
+					Keyword keyword = new Keyword(word);
+					
+					if(keywordRepository.findById(keyword.getId()).isEmpty()) {
+						keywordRepository.save(keyword);
+					}
+					
+					Optional<BillKeyword> optional = billKeywordRepository.findFirstByBillAndKeyword(bill, keyword);
+					if(optional.isPresent()) {
+						continue;
+					}
+				
+					BillKeyword billKeyword = new BillKeyword(bill, keyword);
+					billKeywordRepository.save(billKeyword);
+				}
+			}
+		}
+		
+		System.out.println("----------------------------------");
+	}
+	
+	
+	
+	private List<String> getWords(KomoranResult analyzeResultList) {
+		List<String> nouns = analyzeResultList.getNouns();
+		
+		Map<String, Integer> map = new HashMap<>();
+		
+		for(String noun : nouns) {
+			if(!map.containsKey(noun)) {
+				map.put(noun, 0);
+			}
+			
+			map.put(noun, map.get(noun) + 1);
+		}
+		
+		List<Map.Entry<String, Integer>> list = new LinkedList<>(map.entrySet());
+		Collections.sort(list, new Comparator<>() {
+			@Override
+			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+				return -(o1.getValue() - o2.getValue());
+			}
+		});
+		
+		if(list.isEmpty()) {
+			throw new RuntimeException("source에 단어들이 존재하지 않습니다.");
+		}
+		
+		if(list.size() > 5 && list.get(4).getValue() >= 4) {
+			list = list.stream().filter((e) -> e.getValue() >= 4).collect(Collectors.toList());
+		} else {
+			list = list.subList(0, Math.min(5, list.size()));
+		}
+		
+		int score = 0;
+		List<String> words = new ArrayList<>();
+		for(var e : list) {
+			score += e.getValue();
+			words.add(e.getKey());
+		}
+		
+		return words;
+	}
+	
 	
 	@Async
 	public void migrate(int startPage, Integer endPage) throws Exception {
@@ -406,4 +538,31 @@ class Request {
 //				procDate != null ? procDate : this.procDate
 //				);
 //	}
+}
+
+//@Data
+//class Keyword {
+//	
+//	private final List<String> words;
+//	
+//	private final Integer score;
+//	
+//	public String toURLEncoding() {
+//		try {
+//			return URLEncoder.encode(String.join(" ", words), "utf-8");
+//		} catch(UnsupportedEncodingException e) {
+//			System.out.println(e);
+//			return null;
+//		}
+//	}
+//}
+
+class HanjaOrHangle {
+	final String string;
+	final boolean isHanja;
+	
+	public HanjaOrHangle(String string, boolean isHanja) {
+		this.string = string;
+		this.isHanja = isHanja;
+	}
 }

@@ -24,6 +24,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -40,6 +41,8 @@ dependencies {
 	//querydsl 추가
    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+   
+   implementation 'com.github.shin285:KOMORAN:3.3.4'
 }
 
 tasks.named('test') {
@@ -75,5 +78,4 @@ configurations {
    }
    querydsl.extendsFrom compileClasspath
 }
-
 
