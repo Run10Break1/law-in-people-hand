@@ -50,7 +50,7 @@ public class User extends BaseTimeEntity {
 	
 	private String fcmToken;
 	
-	private Boolean withdrawal = false;
+	private boolean withdrawal = false;
 	
 	private LocalDate withDrawalAt;
 	
