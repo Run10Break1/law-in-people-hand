@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.project.lawinpeoplehand.model.Bill;
@@ -17,11 +20,13 @@ import com.project.lawinpeoplehand.model.QSee;
 import com.project.lawinpeoplehand.model.See;
 import com.project.lawinpeoplehand.model.dto.BillResponse;
 import com.project.lawinpeoplehand.model.dto.SeenBillResponse;
-import com.project.lawinpeoplehand.repository.query.FindAllByMostSeenQuery1;
+import com.project.lawinpeoplehand.repository.query.FindAllByMostSeen;
+import com.project.lawinpeoplehand.repository.query.FindBillCheckingSeen;
 import com.project.lawinpeoplehand.utils.TimeUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPQLQuery;
 
 import lombok.AllArgsConstructor;
@@ -59,9 +64,9 @@ public class SeeRepositoryExtensionImpl extends QuerydslRepositorySupport implem
 		
 		NumberPath<Long> countAlias = Expressions.numberPath(Long.class, "totalCount");
 		
-		JPQLQuery<FindAllByMostSeenQuery1> query1 = from(see)
+		JPQLQuery<FindAllByMostSeen> query1 = from(see)
 				.select(
-						Projections.fields(FindAllByMostSeenQuery1.class,
+						Projections.fields(FindAllByMostSeen.class,
 								see.bill.billID.as("billId"),
 								see.bill.count().as(countAlias)
 						))
@@ -78,7 +83,7 @@ public class SeeRepositoryExtensionImpl extends QuerydslRepositorySupport implem
 			query1.limit(max);
 		}
 		
-		List<FindAllByMostSeenQuery1> query1Result = query1.fetch();
+		List<FindAllByMostSeen> query1Result = query1.fetch();
 		System.out.println(query1Result.toString());
 		List<String> billIdList = query1Result.stream().map(e -> e.getBillId()).collect(Collectors.toList());
 		
@@ -87,7 +92,7 @@ public class SeeRepositoryExtensionImpl extends QuerydslRepositorySupport implem
 		
 		List<SeenBillResponse> result = new ArrayList<>();
 		int order = 0;
-		for(FindAllByMostSeenQuery1 q : query1Result) {
+		for(FindAllByMostSeen q : query1Result) {
 			SeenBillResponse response = new SeenBillResponse();
 			
 			Bill b = null;

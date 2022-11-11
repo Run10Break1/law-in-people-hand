@@ -12,6 +12,6 @@ import com.project.lawinpeoplehand.model.Vote;
 
 
 public interface VoteRepository extends JpaRepository<Vote, Long>, VoteRepositoryExtension {
-	Page<Vote> findAllByUser(User user, Pageable pageable);
 	Optional<Vote> findFirstByUserAndBill(User user, Bill bill);
+	Page<Vote> findAllByUser(User user, Pageable pageable);
 }

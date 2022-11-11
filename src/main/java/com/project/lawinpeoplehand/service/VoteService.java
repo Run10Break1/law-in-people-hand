@@ -51,31 +51,28 @@ public class VoteService {
 		return voteRepository.findAllByMostVoted(from, to, max);
 	}
 	
+	public VotedBillResponse find(Long userId, String billId) {
+		return voteRepository.find(userId, billId);
+	}
+	
+	@Deprecated()
+	// pageable의 sort를 제대로 이용할 수 없음; bill속성으로 sort 불가능
 	public Page<VotedBillResponse> findAllByUser(Long userId, Pageable pageable) {
-		
+	
 		User user = userRepository.findById(userId).get();
 		
 		Page<Vote> votePage = voteRepository.findAllByUser(user, pageable);
-		// vote+사용자는 하나의 bill에 대응되므로 Page<Vote>는 Page<Bill>에 대응된다고 할 수 있습니다.
+		// 'vote+사용자'는 하나의 bill에 대응되므로 Page<Vote>는 Page<Bill>에 대응된다고 할 수 있습니다.
 		
-		List<VotedBillResponse> content = votePage.getContent()
-				.stream()
-				.map(e -> {
-					VotedBillResponse r = new VotedBillResponse();
-					switch(e.getVoteType()) {
-					case AGREE:
-						r.setAgreeCount(1);
-						break;
-					case DISAGREE:
-						r.setDisagreeCount(1);
-						break;
-					}
-					
-					return r;
-				})
-				.collect(Collectors.toList());
-		long total = votePage.getTotalElements();
+		List<VotedBillResponse> content = votePage.getContent().stream().map(e -> {
+			VotedBillResponse response = new VotedBillResponse();
+			
+			response.setBill(new BillResponse(e.getBill()));
+			response.setMe(e.getVoteType());
+			
+			return response;
+		}).collect(Collectors.toList());
 		
-		return new PageImpl<VotedBillResponse>(content, pageable, total);
+		return new PageImpl<>(content, votePage.getPageable(), votePage.getTotalElements());
 	}
 }

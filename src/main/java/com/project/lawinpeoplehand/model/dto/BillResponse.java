@@ -1,6 +1,7 @@
 package com.project.lawinpeoplehand.model.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -14,8 +15,6 @@ import lombok.Data;
 
 @Data
 public class BillResponse {
-	
-	private long jsonUID = 11111111L;
 	
 	private String billId;
 	
@@ -53,6 +52,8 @@ public class BillResponse {
 	private ProcessStage stage;
 	
 	private String overview;
+	
+	private List<String> keywords;
 	
 	public BillResponse(Bill bill) {
 		billId = bill.getBillID();

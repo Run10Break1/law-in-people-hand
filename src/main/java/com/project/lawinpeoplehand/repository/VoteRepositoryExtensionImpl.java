@@ -16,19 +16,16 @@ import com.project.lawinpeoplehand.model.QVote;
 import com.project.lawinpeoplehand.model.Vote;
 import com.project.lawinpeoplehand.model.VoteType;
 import com.project.lawinpeoplehand.model.dto.BillResponse;
+import com.project.lawinpeoplehand.model.dto.BillResponseWithKeywords;
 import com.project.lawinpeoplehand.model.dto.VotedBillResponse;
-import com.project.lawinpeoplehand.repository.query.FindAllByMostVotedQuery1;
-import com.project.lawinpeoplehand.repository.query.FindAllByMostVotedQuery1;
+import com.project.lawinpeoplehand.repository.query.Find;
+import com.project.lawinpeoplehand.repository.query.FindAllByMostVoted;
 import com.project.lawinpeoplehand.utils.TimeUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPQLQuery;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 public class VoteRepositoryExtensionImpl extends QuerydslRepositorySupport implements VoteRepositoryExtension {
@@ -54,9 +51,9 @@ public class VoteRepositoryExtensionImpl extends QuerydslRepositorySupport imple
 		NumberExpression<Integer> disagree = vote.voteType.
 		        when(VoteType.DISAGREE).then(Integer.valueOf(1)).otherwise(Integer.valueOf(0));
 		
-		JPQLQuery<FindAllByMostVotedQuery1> query1 = from(vote)
+		JPQLQuery<FindAllByMostVoted> query1 = from(vote)
 				.select(
-						Projections.fields(FindAllByMostVotedQuery1.class,
+						Projections.fields(FindAllByMostVoted.class,
 								vote.bill.billID,
 								vote.bill.count().as(countAlias),
 								agree.sum().as("agreeCount"),
@@ -75,7 +72,7 @@ public class VoteRepositoryExtensionImpl extends QuerydslRepositorySupport imple
 			query1.limit(max);
 		}
 
-		List<FindAllByMostVotedQuery1> query1Result = query1.fetch();
+		List<FindAllByMostVoted> query1Result = query1.fetch();
 		
 		List<String> billIdList = query1Result.stream().map(e -> e.getBillID()).collect(Collectors.toList());
 		
@@ -84,7 +81,7 @@ public class VoteRepositoryExtensionImpl extends QuerydslRepositorySupport imple
 		
 		List<VotedBillResponse> result = new ArrayList<>();
 		int order = 0;
-		for(FindAllByMostVotedQuery1 q : query1Result) {
+		for(FindAllByMostVoted q : query1Result) {
 			VotedBillResponse response = new VotedBillResponse();
 			
 			Bill b = null;
@@ -106,4 +103,53 @@ public class VoteRepositoryExtensionImpl extends QuerydslRepositorySupport imple
 		}
 		return result;
 	}
+
+
+	@Override
+	public VotedBillResponse find(Long userId, String billId) {
+		QVote vote = QVote.vote;
+		QBill bill = QBill.bill;
+		
+		JPQLQuery<Find> query1 = from(vote)
+				.select(Projections.fields(Find.class,
+						vote.voteType,
+						vote.voteType.count().intValue().as("totalCount")
+				))
+				.groupBy(vote.voteType)
+				.where(vote.bill.billID.eq(billId));
+				
+		List<Find> result1 = query1.fetch();
+		int agreeCount = 0, disagreeCount = 0;
+		for(Find find : result1) {
+			switch(find.getVoteType()) {
+			case AGREE:
+				agreeCount = find.getTotalCount();
+				break;
+			case DISAGREE:
+				disagreeCount = find.getTotalCount();
+				break;
+			}
+		}
+		
+		JPQLQuery<Bill> query2 = from(bill)
+				.select(bill)
+				.where(bill.billID.eq(billId));
+		Bill result2 = query2.fetchFirst();
+		
+		JPQLQuery<VoteType> query3 = from(vote)
+				.select(vote.voteType)
+				.where(vote.bill.billID.eq(billId).and(vote.user.id.eq(userId)));
+		VoteType result3 = query3.fetchFirst();
+		
+		VotedBillResponse response = new VotedBillResponse();
+		response.setAgreeCount(agreeCount);
+		response.setDisagreeCount(disagreeCount);
+		response.setTotalCount(agreeCount + disagreeCount);
+		response.setBill(new BillResponseWithKeywords(result2));
+		response.setMe(result3);
+		
+		return response;
+	}
+	
+	
 }

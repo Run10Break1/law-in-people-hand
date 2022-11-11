@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.project.lawinpeoplehand.model.Bill;
 import com.project.lawinpeoplehand.model.dto.BillResponse;
+import com.project.lawinpeoplehand.model.dto.SeenBillResponse;
+import com.project.lawinpeoplehand.model.dto.VotedBillResponse;
 import com.project.lawinpeoplehand.repository.BillRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,5 +34,13 @@ public class BillService {
 		long total = billPage.getTotalElements();
 		
 		return new PageImpl<BillResponse>(content, pageable, total);
+	}
+	
+	public Page<SeenBillResponse> findAllBillCheckingSeen(Pageable pageable, Long userId) {
+		return billRepository.findAllBillCheckingSeen(pageable, userId);
+	}
+	
+	public Page<VotedBillResponse> findAllBillCheckingVoted(Pageable pageable, Long userId) {
+		return billRepository.findAllBillCheckingVoted(userId, pageable);
 	}
 }

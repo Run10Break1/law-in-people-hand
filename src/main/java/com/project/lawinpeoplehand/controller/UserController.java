@@ -53,10 +53,7 @@ public class UserController {
 		UserResponse userResponse = userService.login(request);
 		
 		if(userResponse == null) {
-			final UserResponse nullUserResponse = new UserResponse();
-			nullUserResponse.setId(null);
-			
-			return ResponseEntity.ok(nullUserResponse);
+			return ResponseEntity.ok(null);
 		}
 		
 		return ResponseEntity.ok(userResponse);

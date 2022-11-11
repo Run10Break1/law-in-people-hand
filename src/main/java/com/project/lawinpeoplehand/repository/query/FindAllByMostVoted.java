@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindAllByMostVotedQuery1 {
+public class FindAllByMostVoted {
 	private String billID;
 	private Long totalCount;
 	private Integer agreeCount;

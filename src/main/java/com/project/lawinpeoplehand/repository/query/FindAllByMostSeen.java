@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindAllByMostSeenQuery1 {
+public class FindAllByMostSeen {
 	private String billId;
  	private Long totalCount;
 }

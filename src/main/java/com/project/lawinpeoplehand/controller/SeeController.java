@@ -3,6 +3,8 @@ package com.project.lawinpeoplehand.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class SeeController {
 	private final SeeService seeService;
 	
 	@PostMapping("")
-	public ResponseEntity<String> see(@RequestBody SeeRequest request) {
+	public ResponseEntity<String> checkAsSeen(@RequestBody SeeRequest request) {
 		Long userId = request.getUserId();
 		String billId = request.getBillId();
 		
@@ -36,8 +38,7 @@ public class SeeController {
 		
 		return ResponseEntity.ok("ok");
 	}
-	
-	
+
 	@GetMapping("/most")
 	public ResponseEntity<List<SeenBillResponse>> findAllByMostSeen(
 			@RequestParam(value = "from", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate from, 
@@ -47,6 +48,4 @@ public class SeeController {
 		
 		return ResponseEntity.ok(response);
 	}
-	
-	
 }

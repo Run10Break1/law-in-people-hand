@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lawinpeoplehand.model.VoteType;
-import com.project.lawinpeoplehand.model.dto.BillResponse;
 import com.project.lawinpeoplehand.model.dto.VoteRequest;
 import com.project.lawinpeoplehand.model.dto.VotedBillResponse;
 import com.project.lawinpeoplehand.service.VoteService;
@@ -46,6 +45,13 @@ public class VoteController {
 		return ResponseEntity.ok("ok");
 	}
 	
+	@GetMapping("")
+	public ResponseEntity<VotedBillResponse> find(@RequestParam("userId") Long userId, @RequestParam("billId") String billId) {
+		VotedBillResponse response = voteService.find(userId, billId);
+		
+		return ResponseEntity.ok(response);
+	}
+	
 	@GetMapping("/most")
 	public ResponseEntity<List<VotedBillResponse>> findAllByMostVoted(
 			@RequestParam(value = "from", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate from, 
@@ -56,6 +62,10 @@ public class VoteController {
 		return ResponseEntity.ok(response);
 	}
 	
+	
+	// 자신이 어떤 투표를 했는지만 얻을 수 있을 뿐, 전체 통계를 얻을 수 없습니다.
+	// 이를 위해서는 BillController의 findAllBillCheckingVoted를 확인해보세요.
+	@Deprecated()
 	@GetMapping("list/{userId}")
 	public ResponseEntity<Page<VotedBillResponse>> list(@PathVariable("userId") Long userId, Pageable pageable) {
 		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Order.desc("createdAt")));
